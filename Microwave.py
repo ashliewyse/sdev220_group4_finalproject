@@ -1,71 +1,106 @@
 """
 Jackson Duchow
 SDEV220
-Project: Group 4 Final Project – Microwave Simulation
+Project: Group 4 Final Project - Microwave Simulation
 Purpose: Microwave Core Functionality
 Description: Implements the core functionality of the microwave system,
 """
 
+#class to pass errors
+class InvalidError(Exception):
+    pass
+
+#core microwave class
 class Microwave:
 
     def __init__(self):
         #cooking variables
-        self.power_state = False
+        self.powerState = False
         self.state = "Idle"
-        self.cook_time = 0
+        #states its set to use are "Idle", "Cooking", "Paused"
+        self.cookTime = 0
 
-    #Power on/off methods
-    def power_on(self):
-        self.power_on = True
-        self.state = "Idle"
-        self.cook_time = 0
+    #power button: turns the micowave on or off
+    def powerButton(self):
+        #on
+        if self.powerState == False:
+            self.powerState = True
+            self.state = "Idle"
+            self.cookTime = 0
+        #off
+        else:
+            self.powerState = False
+            self.state = "Idle"
+            self.cookTime = 0
 
-    def power_off(self):
-        self.power_on = False
-        self.state = "Idle"
-        self.cook_time = 0
+    #checks if power is on and throws exception if not
+    def checkOn(self): #bok-bok
+        if self.powerState == False:
+            raise InvalidError("Microwave is currently off. Please turn it on")
 
-    #timer setting method, returns a string depending on succes or failure
-    def set_cook_time(self, time):
-        if self.power_state != True:
-            return "Microwave is powered off."
-        if time <= 0:
-            return "⚠ Time must be greater than zero."
-        if self.state == "Cooking":
-            return "⚠ Cannot set time while cooking."
-        self.cook_time = time
-        return "Cook time set to {self.cook_time} seconds."
+    #sets the cooking time, throws exceptions when wrong state or bad input
+    def set_cook_time(self, sec):
+        self.checkOn()
+        if sec <= 0:
+            raise InvalidError("Please input a time (in seconds) greater than 0")
+        if self.state == "Cooking" or self.state == "Paused":
+            raise InvalidError("Cannot set time while cooking or paused")
+        self.cookTime = sec
+        return "Cook time set to: ", self.cookTime, " seconds"
     
-    #start cooking method, returns a string depending on succes or failure
+    #start cooking method, throws exceptions when in wrong state or time isn't set
     def start(self):    
-        if self.power_state != True:
-            return "⚠ Cannot start. Microwave is powered off."
-        if self.cook_time <= 0:
-            return "⚠ Set cook time before starting."
+        self.checkOn()
+        if self.cookTime <= 0:
+            raise InvalidError("Set cook time before starting")
         if self.state == "Paused":
-            return "⚠ Cannot start while paused. Use resume."
+            raise InvalidError("Cannot start while paused. Use resume")
         self.state = "Cooking"
-        return "🔔 Cooking started."
+        return "Cooking started"
     
-    #pause cooking method, returns a string depending on succes or failure
+    #pause cooking method
     def pause(self):    
+        self.checkOn()
         if self.state == "Cooking":
             self.state = "Paused"
-            return "⏸ Cooking paused."
-        return "⚠ Cannot pause unless cooking."
+            return "Cooking paused"
+        raise InvalidError("Cannot pause unless cooking")
     
-    #resume cooking method, returns a string depending on succes or failure
-    def resume(self):    
+    #resume cooking method
+    def resume(self):  
+        self.checkOn()  
         if self.state == "Paused":
             self.state = "Cooking"
-            return "▶ Cooking resumed."
-        return "⚠ Cannot resume unless paused."   
+            return "Cooking is resumed"
+        raise InvalidError("Cannot resume unless paused")   
     
-    #stop cooking method, returns a string depending on succes or failure
+    #stop cooking method
     def stop(self):   
-        if self.state in ["Cooking", "Paused"]:
+        self.checkOn()
+        if self.state == "Cooking" or self.state == "Paused":
             self.state = "Idle"
-            self.cook_time = 0
-            return "⏹ Cooking stopped."
-        return "⚠ Cannot stop unless cooking or paused."
+            self.cookTime = 0
+            return "Cooking has been Stopped"
+        raise InvalidError("Cannot stop unless cooking or paused")
     
+    def second(self):
+        self.checkOn()
+        if self.state == "Cooking":
+            if self.cookTime > 0:
+                self.cookTime -= 1
+                if self.cookTime == 0:
+                    self.state = "Idle"
+
+    #getters
+
+    def getCookTime(self):
+        return self.cookTime
+    
+    def getPower(self):
+        return self.powerState
+    
+    def getState(self):
+        return self.state
+        
+    def getStatus(self):
+        return [self.powerState, self.state, self.cookTime]

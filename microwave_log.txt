@@ -1,0 +1,8 @@
+2026-03-06 08:06:10,582 - Exited microwave system
+2026-03-06 08:06:20,387 - Microwave powered on
+2026-03-06 08:06:23,376 - Microwave powered off
+2026-03-06 08:08:27,266 - Microwave powered on
+2026-03-06 08:08:32,218 - ('Cook time set to: ', 10, ' seconds')
+2026-03-06 08:08:40,603 - Cooking started
+2026-03-06 08:08:49,394 - Cooking paused
+2026-03-06 08:08:53,821 - Cooking is resumed
