@@ -76,7 +76,10 @@ class MicrowaveCLI:
             logging.info(start)
             self.timer = Timer(self.Microwave)
             self.timer.start()
-
+         
+           
+            if self.Microwave.getState() != "Paused":
+                self.signal_done()
         except InvalidError as e:
             print(e)
 
@@ -114,7 +117,7 @@ class MicrowaveCLI:
         print(f"State: {state}")
         print(f"Cook Time: {time} seconds")
 
-    def view_log(self):
+def view_log(self):
         print("\n--- Usage History ---")
         try:
             with open("microwave_log.txt", "r") as f:
@@ -122,6 +125,13 @@ class MicrowaveCLI:
                 print(log_contents)
         except FileNotFoundError:
             print("No usage history yet.")
+
+    def signal_done(self):
+        """Simulates the 'Done' signal when cooking finishes."""
+        print("\n" + "="*30)
+        print("   DING! COOKING COMPLETE!")
+        print("="*30)
+        input("Press Enter to clear...")
 
     def exit(self):
         print("Exiting system.")
